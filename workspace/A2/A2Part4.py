@@ -1,4 +1,5 @@
 import numpy as np
+import A2Part2
 
 """
 A2-Part-4: Implement the inverse discrete Fourier transform (IDFT)
@@ -38,10 +39,12 @@ def IDFT(X):
     N = len(X)
     x = np.zeros(N, complex)
     for k in range(0,N):
+        # Find cross-correlation between the signal and a set of N complex sinusoids
         # Multiply each point in the signal with a complex sinusoid. Since sinusoids are orthogonal,
         # the result of the multiplication will be non-zero only if the sinusoid is present in the signal
-        x[k] = sum(X * genComplexISine(k,N)) / N
-        
+    
+        #x[k] = sum(X * genComplexISine(k,N)) / N
+        x[k] = sum(X * A2Part2.genComplexSine(-k,N)) / N #IDFT is same as DFT but with -ve frequencies and a factor of 1/N
     return x
     
 
