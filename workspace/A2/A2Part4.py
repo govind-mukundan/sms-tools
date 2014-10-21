@@ -1,4 +1,5 @@
 import numpy as np
+import A2Part2
 
 """
 A2-Part-4: Implement the inverse discrete Fourier transform (IDFT)
