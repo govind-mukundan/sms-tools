@@ -45,8 +45,21 @@ def optimalZeropad(x, fs, f):
                         x appropriately (zero-padding length to be computed). mX is (M/2)+1 samples long
     """
     ## Your code here
+    print "-----"
+    print fs
+    print f
+    print "length x = " + str(len(x))
     # Find the number of additional samples you need to make the number of cycles an integer
-    missing_samples = len(x) % (fs/f)
+    # This means that N must be an integer multiple of Fs/f, we need to find the number of samples to add to N
+    # to satisfy this condition. So we cant use the mod operator because it jsut gives you the remainder
+    ratio = fs/f
+    mul = int(len(x)/ratio)
+    print "mul = " + str(mul)
+    if(mul*ratio == len(x)):
+        missing_samples = 0 # perfect multiple
+    else:
+        missing_samples = ratio * (mul+1) - len(x)
+
     print 'missing samples = ' + str(missing_samples)
     # add that many zeros
     x1 = np.zeros(len(x) + missing_samples)
@@ -54,21 +67,26 @@ def optimalZeropad(x, fs, f):
     #x1 = np.roll(x1, (x1.size+1)/2)
     # Now lets compute the DFT using FFT
     X = fft(x1)
+    M = len(x1)
     # Now return the +ve half of the magnitude spectrum in decibels    
-    mX = 20*np.log10(abs(X[:len(x1)/2+1]))
-    
+    mX = 20*np.log10(abs(X[:M/2+1]))
+
+    # Beaautify the output to give zeros for values less than -120dB        
+    for i in range(0,len(mX)):
+        #print mX[i]
+        if(mX[i] < -120):
+            mX[i] = 0
+            
+    print "Length mX = " + str(len(mX))   
     return mX
     
-
-
 ##########################
-#You can put the code that calls the above functions down here    
+#You can put the code that calls the above functions down here
 if __name__ == "__main__":
-    f1 = 100
-    W = 15
+    f1 = 400
+    W = 300
     N = 20000
-    Fs = 1000
-    
+    Fs = 8000
     n = np.arange(0,W)
     x = np.cos(2*np.pi*f1*n/Fs)
     plt.subplot(311)
@@ -79,5 +97,7 @@ if __name__ == "__main__":
     plt.plot(mX)
     #plt.subplot(313)
     #plt.plot(x1,'o')
-    print mX
+    #print mX
+
+
     
