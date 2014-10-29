@@ -79,10 +79,11 @@ if __name__ == "__main__":
     f2 = 200
     N = 20000
     Fs = 10000
-    
     n = np.arange(0,N)
     x = np.cos(2*np.pi*f1*n/Fs) + np.cos(2*np.pi*f2*n/Fs) 
     
+    #x = np.cos(2*np.pi*f1*n/Fs + f1) + np.cos(2*np.pi*f2*n/Fs + f2)+ np.cos(2*np.pi*300*n/Fs + 300) + np.cos(2*np.pi*400*n/Fs + 400)
+    #plt.plot(x)
     mX = minimizeEnergySpreadDFT(x, Fs, f1, f2)
     plt.plot(mX,'o')
-    
+    print mX
