@@ -42,3 +42,58 @@ def testRealEven(x):
         X (numpy array, possibly complex) = The M point DFT of dftbuffer 
     """
     ## Your code here
+    # IF both real ane even, mag(F(k)) = mag(F(N-k)) AND phase(F(k)) = 0
+    # IF only real, mag(F(k)) = mag(F(N-k)) AND phase(F(k)) = -phase(F(N-k))
+    
+    # 1. Zero phase window --> cyclic shift to align the midpoint of the signal to the start fo the buffer
+    #x = x * np.hamming(len(x))    
+    x = np.roll(x, (x.size+1)/2)
+    #print x
+    # 2. compute DFT
+    X = fft(x)
+    M = len(x)
+    mX = 20*np.log10(abs(X))
+
+    # Beaautify the output to give zeros for values less than -120dB        
+    for i in range(0,len(mX)):
+        #print mX[i]
+        if(mX[i] < -120):
+            mX[i] = 0
+    mag_flag = False
+    ph_flag = False
+    print(mX)
+    # 3. Test for real + even
+    for i in range(1,M/2+1):
+        print 'M1 = ' + str(abs(mX[i])) + ' M2 = ' + str( abs(mX[M-i]))
+        if (abs(mX[i]) != abs(mX[M-i])):
+            mag_flag = True;
+            
+    # Note that phase of Pi is also same as 0
+    for i in range(0,M):
+        print 'PH = ' + str(np.angle(X[i])) 
+        if ( (abs(np.angle(X[i])) < 1e-6) or (abs(np.angle(X[i])) > 3.140 and (abs(np.angle(X[i])) < 3.143)) ):
+            print ""
+        else:
+            ph_flag = True
+            print "Phase condition failed!"
+    
+    if((ph_flag == False) and (mag_flag == False)):
+        print "Real Even Condition True"
+        RealEven = True
+    else:
+        print "Real Even Condition False"
+        RealEven = False
+        
+        
+    return RealEven,x,X
+        
+        
+##########################
+#You can put the code that calls the above functions down here
+if __name__ == "__main__":
+    
+    x = np.array([ 2, 3, 4, 3, 2 ]);
+    testRealEven(x)
+    
+        
+    
