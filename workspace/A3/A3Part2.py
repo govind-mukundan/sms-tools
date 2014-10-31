@@ -53,13 +53,17 @@ def optimalZeropad(x, fs, f):
     # This means that N must be an integer multiple of Fs/f, we need to find the number of samples to add to N
     # to satisfy this condition. So we cant use the mod operator because it jsut gives you the remainder
     ratio = fs/f
-    mul = int(len(x)/ratio)
+    mul = np.floor(len(x)/ratio)
     print "mul = " + str(mul)
+    #missing_samples = ratio * (mul+1) - len(x)
     if(mul*ratio == len(x)):
         missing_samples = 0 # perfect multiple
     else:
         missing_samples = ratio * (mul+1) - len(x)
-
+    
+#    k = np.ceil(f * len(x) / fs)
+#    M = k*fs/f
+#    missing_samples = abs(M - len(x))
     print 'missing samples = ' + str(missing_samples)
     # add that many zeros
     x1 = np.zeros(len(x) + missing_samples)
@@ -72,21 +76,31 @@ def optimalZeropad(x, fs, f):
     mX = 20*np.log10(abs(X[:M/2+1]))
 
     # Beaautify the output to give zeros for values less than -120dB        
-    for i in range(0,len(mX)):
-        #print mX[i]
-        if(mX[i] < -120):
-            mX[i] = 0
+#    for i in range(0,len(mX)):
+#        #print mX[i]
+#        if(mX[i] < -120):
+#            mX[i] = 0
             
-    print "Length mX = " + str(len(mX))   
+    print "Length mX = " + str(len(mX))
+    
+#    plt.figure()
+#    N = len(x1)
+#    plt.plot(float(Fs)*np.arange(mX.size)/float(N), mX, 'r')
+#    plt.axis([0, Fs/2.0, min(mX), max(mX)])
+#    plt.title ('magnitude spectrum: mX')
+#    plt.ylabel('amplitude (dB)')
+#    plt.xlabel('frequency (Hz)')
+    
+    
     return mX
     
 ##########################
 #You can put the code that calls the above functions down here
 if __name__ == "__main__":
-    f1 = 400
-    W = 300
+    f1 = 100
+    W = 15
     N = 20000
-    Fs = 8000
+    Fs = 1000
     n = np.arange(0,W)
     x = np.cos(2*np.pi*f1*n/Fs)
     plt.subplot(311)
