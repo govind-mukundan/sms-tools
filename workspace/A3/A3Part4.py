@@ -48,7 +48,57 @@ def suppressFreqDFTmodel(x, fs, N):
         yfilt (numpy array) = Output of the dftSynth() with filtering (M samples long)
     The first few lines of the code have been written for you, do not modify it. 
     """
+    print str(fs) + "---" +  str(N) + "===" + str(len(x))
     M = len(x)
     w = get_window('hamming', M)
     outputScaleFactor = sum(w)
     ## Your code here
+    # compute the dft of the sound fragment
+    mX, pX = dftAnal(x, w, N)
+    y = dftSynth(mX, pX, M)*outputScaleFactor
+    # Filter - set the bins < 70Hz = 0 or -120dB
+    # Note that DFT.Anal() returns the +ve side of the spectrum only
+    nbin=np.ceil(N*70.0/fs)
+    mX[:nbin+1]=-120
+    print "Number of Bins = " + str(nbin+1)
+    nbin = 0
+    for k in range(0,len(mX)):
+        f = np.ceil(k*fs/N)
+        if(f <= 80.0):
+            print "freq: " + str(f) + " Bin Index = " + str(k)
+            nbin = nbin + 1
+    print "Number of Bins 2x = " + str(nbin)
+    # compute the inverse dft of the spectrum
+    yfilt = dftSynth(mX, pX, M)*outputScaleFactor
+
+    return(y,yfilt)
+
+
+##########################
+#You can put the code that calls the above functions down here
+if __name__ == "__main__":
+    
+    f1 = 71
+    f2 = 200
+    f3 = 300
+    f4 = 500
+    N = 1024
+    Fs = 10000
+    n = np.arange(0,N)
+    x = np.cos(2*np.pi*f1*n/Fs) + np.cos(2*np.pi*f2*n/Fs) + np.cos(2*np.pi*f3*n/Fs) + np.cos(2*np.pi*f4*n/Fs) 
+    y,yfilt = suppressFreqDFTmodel(x,Fs,N)
+    plt.subplot(311)
+    plt.plot(y)
+    plt.subplot(312)
+    plt.plot(yfilt)
+    
+    M = len(x)
+    w = get_window('hamming', M)
+    outputScaleFactor = sum(w)
+    mX, pX = dftAnal(yfilt, w, N)
+    plt.subplot(313)
+    plt.plot(float(Fs)*np.arange(mX.size)/float(N), mX, 'r')
+    plt.axis([0, Fs/2.0, min(mX), max(mX)])
+    plt.title ('magnitude spectrum: mX')
+    plt.ylabel('amplitude (dB)')
+    plt.xlabel('frequency (Hz)')

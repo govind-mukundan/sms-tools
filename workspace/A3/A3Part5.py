@@ -60,3 +60,37 @@ def zpFFTsizeExpt(x, fs):
     w1 = get_window('hamming',M)
     w2 = get_window('hamming',2*M)
     ## Your code here 
+    # NOTE: The shape of the window is affected by the size parameter M. So if you want a 256 size window
+    #you need to specifically create it and cant use w[:256]
+    # Case-1: Input signal xseg (256 samples), window w1 (256 samples), and FFT size of 256
+    N = 256
+    mX1_80, pX1 = dftAnal(xseg, w1, N)
+    #Input signal x (512 samples), window w2 (512 samples), and FFT size of 512
+    N = 512
+    mX2_80, pX2 = dftAnal(x[:N], w2[:N], N)
+    #Input signal xseg (256 samples), window w1 (256 samples), and FFT size of 512 (Implicitly does a zero-padding of xseg by 256 samples)
+    N = 256
+    mX3_80, pX3 = dftAnal(x[:N], w1, 512)
+    
+    return(mX1_80[:80],mX2_80[:80],mX3_80[:80])
+    #return(mX1_80 ,mX2_80, mX3_80)    
+    
+    
+##########################
+#You can put the code that calls the above functions down here
+if __name__ == "__main__":
+    f1 = 110
+    N = 512
+    Fs = 1000
+    n = np.arange(0,N)
+    x = np.cos(2*np.pi*f1*n/Fs)
+    mX1_80,mX2_80,mX3_80 = zpFFTsizeExpt(x,Fs)
+    
+    plt.hold = True
+    plt.plot(float(Fs)*np.arange(mX1_80.size)/256, mX1_80, 'r')
+    plt.plot(float(Fs)*np.arange(mX2_80.size)/512, mX2_80, 'g')
+    plt.plot(float(Fs)*np.arange(mX3_80.size)/512, mX3_80, 'b')
+    plt.axis([0, Fs/2.0, min(mX1_80), max(mX1_80)])
+    plt.title ('magnitude spectrum: mX')
+    plt.ylabel('amplitude (dB)')
+    plt.xlabel('frequency (Hz)')
