@@ -61,14 +61,28 @@ def computeSNR(inputFile, window, M, N, H):
 #    x = np.append(x,np.zeros(hM1))                 # add zeros at the end to analyze last sample
     w = get_window(window, M)
     y = stft.stft(x, fs, w, N, H)
+    #mX, pX = stft.stftAnal(x, fs, w, N, H)
+    #y = stft.stftSynth(mX, pX, M, H)
     print "length x = " + str(x.size) + " Length y = " + str(y.size)
-    xPower = sum(x*x)
-    noise = x - y
-    noisePower = sum(noise*noise)
+    xPower = np.sum(x*x)
+    noise = x - y[0:len(x)]
+    noisePower = np.sum(noise*noise)
     
-    SNR1 = xPower/noisePower
+    SNR1 = 10*np.log10(xPower/noisePower)
     print "SNR1 = " + str(SNR1)
+
+    x1 = np.zeros(len(x) - 2*M )
+    x1 = x[M:len(x)-M]  
+    y1 = y[M:len(x)-M]
+    print "length x1 = " + str(x1.size) + " Length y = " + str(y.size)
+    xPower = np.sum(x1*x1)
+    noise = x1 - y1[0:len(x1)]
+    noisePower = np.sum(noise*noise)
     
+    SNR2 = 10*np.log10(xPower/noisePower)
+    print "SNR2 = " + str(SNR2)
+    
+    return (SNR1, SNR2)
     
     
 #You can put the code that calls the above functions down here

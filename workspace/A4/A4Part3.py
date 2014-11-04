@@ -62,3 +62,10 @@ def computeEngEnv(inputFile, window, M, N, H):
     """
     
     ### your code here
+    
+    
+    
+    
+#You can put the code that calls the above functions down here
+if __name__ == "__main__":
+    computeEngEnv('../../sounds/piano.wav','blackman',512,1024,128)
