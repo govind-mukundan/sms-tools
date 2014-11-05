@@ -100,6 +100,9 @@ def computeEngEnv(inputFile, window, M, N, H):
     
     engEnv[0:numFrames,0] = e1[:]
     engEnv[0:numFrames,1] = e2[:]
+    
+    # By looking at the plot you can see the frame numbers that have more <less 3k or 10k frequency content.
+    # And by knowign the frame number, you can tell the time location of the change in frequency
     plt.plot(e1)
     plt.plot(e2)
     
