@@ -62,6 +62,40 @@ def computeEngEnv(inputFile, window, M, N, H):
     """
     
     ### your code here
+    F1 = 3000
+    F2 = 10000
+
+    (fs, x) = UF.wavread(inputFile)
+    w = get_window(window, M)
+    mX, pX = stft.stftAnal(x, fs, w, N, H)
+    y = stft.stftSynth(mX, pX, M, H)
+    print "length x = " + str(x.size) + " Length y = " + str(y.size)
+    mX = np.power(mX,10)/20 # de-convert from decibel
+    # Note that mX is an array of DFT frames corresponding to each frame in the entire signal.
+    # Each ROW of mX is a DFT of the particular frame. Toral numebr of rows is the total number of frames.
+    
+    # Find number of bins in the region 0 - 3k, f = k*Fs/N
+    k0 = 0
+    k1 = F1*N/fs # Bin number/index of first limit
+    k2 = F2*N/fs
+    R1 = [k0,k1]
+    R2 = [k1,k2]
+    numFrames = int(mX[:,0].size)
+    print "Number of Frames = " + str(numFrames)
+    # Find the energy in the spectrum f > 0 and <3k
+    e1 = np.zeros((numFrames,k1-k0-1)) 
+    e2 = np.zeros((numFrames,k2-k1-1))
+    for i in range(0,numFrames):
+        e1[i] = np.sum( mX[i,k0+1:k1] * mX[i,k0+1:k1])
+        e2[i] = np.sum( mX[i,k1+1:k2] * mX[i,k1+1:k2])
+    
+    # Convert back to dB
+    e1 = 10*np.log10(e1) 
+    e2 = 10*np.log10(e2)
+    
+    
+
+    
     
     
     

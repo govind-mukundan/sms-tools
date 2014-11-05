@@ -54,11 +54,6 @@ def computeSNR(inputFile, window, M, N, H):
     ## your code here
     # Energy is the sum of squares of magnitude spectrum bins or in Timedomain its just the signl squared
     (fs, x) = UF.wavread(inputFile)
-#    M = w.size                                     # size of analysis window
-#    hM1 = int(math.floor((M+1)/2))                 # half analysis window size by rounding
-#    hM2 = int(math.floor(M/2))                     # half analysis window size by floor
-#    x = np.append(np.zeros(hM2),x)                 # add zeros at beginning to center first window at sample 0
-#    x = np.append(x,np.zeros(hM1))                 # add zeros at the end to analyze last sample
     w = get_window(window, M)
     y = stft.stft(x, fs, w, N, H)
     #mX, pX = stft.stftAnal(x, fs, w, N, H)
