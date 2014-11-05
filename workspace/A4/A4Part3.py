@@ -69,31 +69,56 @@ def computeEngEnv(inputFile, window, M, N, H):
     w = get_window(window, M)
     mX, pX = stft.stftAnal(x, fs, w, N, H)
     y = stft.stftSynth(mX, pX, M, H)
-    print "length x = " + str(x.size) + " Length y = " + str(y.size)
-    mX = np.power(mX,10)/20 # de-convert from decibel
+    print "length x = " + str(x.size) + " Shape mX = "
+    np.shape(mX)
+    #print mX[0]
+    mX = np.power(10,(mX/20.0)) # de-convert from decibel
     # Note that mX is an array of DFT frames corresponding to each frame in the entire signal.
     # Each ROW of mX is a DFT of the particular frame. Toral numebr of rows is the total number of frames.
     
     # Find number of bins in the region 0 - 3k, f = k*Fs/N
     k0 = 0
-    k1 = F1*N/fs # Bin number/index of first limit
-    k2 = F2*N/fs
+    k1 = np.ceil(F1*N/fs) # Bin number/index of first limit
+    k2 = np.ceil(F2*N/fs)
+    print "Bin 1 =" + str(k1) + " Bin 2 =" + str(k2)
     R1 = [k0,k1]
     R2 = [k1,k2]
     numFrames = int(mX[:,0].size)
     print "Number of Frames = " + str(numFrames)
     # Find the energy in the spectrum f > 0 and <3k
-    e1 = np.zeros((numFrames,k1-k0-1)) 
-    e2 = np.zeros((numFrames,k2-k1-1))
+    e1 = np.zeros(numFrames) 
+    e2 = np.zeros(numFrames)
+    engEnv = np.zeros((numFrames,2))
     for i in range(0,numFrames):
-        e1[i] = np.sum( mX[i,k0+1:k1] * mX[i,k0+1:k1])
-        e2[i] = np.sum( mX[i,k1+1:k2] * mX[i,k1+1:k2])
+        e1[i] = np.sum( mX[i,k0+1:k1+1] * mX[i,k0+1:k1+1])
+        e2[i] = np.sum( mX[i,k1+1:k2+1] * mX[i,k1+1:k2+1])
     
     # Convert back to dB
     e1 = 10*np.log10(e1) 
     e2 = 10*np.log10(e2)
+    mX = 20*np.log10(mX)
     
+    engEnv[0:numFrames,0] = e1[:]
+    engEnv[0:numFrames,1] = e2[:]
+    plt.plot(e1)
+    plt.plot(e2)
     
+    return(engEnv)
+#    plt.subplot(211)
+#
+#    frmTime = H*np.arange(numFrames)/float(fs)                             
+#    binFreq = np.arange(N/2)*float(fs)/N                         
+#    plt.pcolormesh(frmTime, binFreq, np.transpose(mX))
+#    plt.title('mX (piano.wav), M=1001, N=1024, H=256')
+#    plt.autoscale(tight=True)
+#    
+#    plt.subplot(212)
+#    numFrames = int(pX[:,0].size)
+#    frmTime = H*np.arange(numFrames)/float(fs)                             
+#    binFreq = np.arange(N/2)*float(fs)/N                         
+#    plt.pcolormesh(frmTime, binFreq, np.diff(np.transpose(pX),axis=0))
+#    plt.title('pX derivative (piano.wav), M=1001, N=1024, H=256')
+#    plt.autoscale(tight=True)
 
     
     
