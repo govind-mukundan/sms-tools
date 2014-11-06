@@ -8,6 +8,7 @@ import math
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../software/models/'))
 import stft
 import utilFunctions as UF
+import A4Part3
 
 eps = np.finfo(float).eps
 
@@ -65,3 +66,35 @@ def computeODF(inputFile, window, M, N, H):
     """
     
     ### your code here
+    # The job of the Onset Detection Function is to find the frame where a certain frequency range suddenly APPEARS
+    # (onset). We are not interested in the frame where the frequency band dissappears (offset), so we half wave rectify
+    # the ODF. A simple ODF is the difference in energy between two consequitive frames. The energy should be of the 
+    # particular frequency specrum of interest.
+    
+    engEnv = A4Part3.computeEngEnv(inputFile, window, M, N, H)
+    ODF = np.zeros(np.shape(engEnv))    
+    numFrames = int(engEnv[:,0].size)
+    print "Number of Frames = " + str(numFrames)
+    for i in range(1,numFrames):
+        ODF[i,0] = engEnv[i,0] - engEnv[i-1,0]
+        if(ODF[i,0] < 0): # Rectify
+            ODF[i,0] = 0
+        
+    for i in range(1,numFrames):
+        ODF[i,1] = engEnv[i,1] - engEnv[i-1,1]
+        if(ODF[i,1] < 0): # Rectify
+            ODF[i,1] = 0
+        
+        
+        
+    plt.plot(ODF)
+    
+    return(ODF)
+    
+    
+    
+    
+    
+#You can put the code that calls the above functions down here
+if __name__ == "__main__":
+    computeODF('../../sounds/piano.wav','blackman',512,1024,128)
