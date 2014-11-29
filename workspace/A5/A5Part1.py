@@ -61,14 +61,16 @@ def minFreqEstErr(inputFile, f):
     k = 21 # Found this by running hte main code
     M = 100 * k + 1
     N = findNFromM(100*k+1)
+    N = int(N)
     x = ip[fs/2 - M/2 : fs/2 + M/2 + 1]
     w = get_window(window, M)
     mX, pX = DFT.dftAnal(x, w, N)
     ploc = UF.peakDetection(mX, t)
     iploc, ipmag, ipphase = UF.peakInterp(mX, pX, ploc) 
-    ipfreq = fs*iploc/float(N)                            # convert peak locations to Hertz
+    ipfreq = float(fs*iploc/float(N))                            # convert peak locations to Hertz
     print "FEst = " + str(ipfreq) + "M = " + str(M) + "N = " + str(N)
-    
+    print  'M is ' + repr(type(M)) + ', estErr=' + repr(type(ipfreq)) + ', N=' + repr(type(N))
+     
     return (float(ipfreq),int(M),int(N))
 
 def findNFromM(M):

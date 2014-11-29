@@ -69,8 +69,8 @@ def mainlobeTracker(inputFile = '../../sounds/sines-440-602-hRange.wav'):
            fTrackTrue = A Kx2 numpy array of true frequency values, one row per time frame, one column per component
     """       
     # Analysis parameters: Modify values of the parameters marked XX
-    window = XX                                # Window type
-    t = XX                                     # threshold (negative dB)
+    window = 'blackmanharris'                                # Window type
+    t = -80.0                                     # threshold (negative dB)
     
     ### Go through the code below and understand it, do not modify anything ###   
     M = 2047                                             # Window size 
@@ -123,3 +123,7 @@ def genTrueFreqTracks(tStamps):
     fTrack[:,0] = np.transpose(440*np.ones((len(tStamps),1)))
     fTrack[:,1] = np.transpose(602*np.ones((len(tStamps),1)))
     return fTrack
+
+if __name__ == "__main__":
+    #minFreqEstErr('../../sounds/sine-440.wav',150)
+    mainlobeTracker()
