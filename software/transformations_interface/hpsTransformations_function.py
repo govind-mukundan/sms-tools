@@ -112,7 +112,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 	hfreq, hmag: harmonic frequencies and magnitudes
 	mYst: stochastic residual
 	freqScaling: frequency scaling factors, in time-value pairs (value of 1 no scaling)
-	freqStretchig: frequency stretching factors, in time-value pairs (value of 1 no stretching)
+	freqStretching: frequency stretching factors, in time-value pairs (value of 1 no stretching)
 	timbrePreservation: 1 preserves original timbre, 0 it does not
 	timeScaling: time scaling factors, in time-value pairs
 	"""
@@ -172,7 +172,7 @@ def transformation_synthesis(inputFile, fs, hfreq, hmag, mYst, freqScaling = np.
 	plt.title('output sound: y')
 
 	plt.tight_layout()
-	plt.show()
+	plt.show(block=False)
 
 if __name__ == "__main__":
 	
@@ -182,4 +182,4 @@ if __name__ == "__main__":
 	# transformation and synthesis
 	transformation_synthesis(inputFile, fs, hfreq, hmag, mYst)
 
-	plt.show()
+	plt.show(block=False)
