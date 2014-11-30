@@ -77,11 +77,40 @@ def estimateInharmonicity(inputFile = '../../sounds/piano.wav', t1=0.1, t2=0.5, 
     ### Your code here
     
     # 0. Read the audio file
-    
+    fs, x = UF.wavread(inputFile)                               #reading inputFile
+    w  = get_window(window, M)                                  #obtaining analysis window 
     # 1. Use harmonic model to to compute the harmonic frequencies and magnitudes
-   
+    xhfreq, xhmag, xhphase = HM.harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope = 0.01, minSineDur = 0.0)
+
+    # xhfreq is a list of jagged arrays each array containing the list of harmonics in that frame 
     # 2. Extract the segment in which you need to compute the inharmonicity. 
-    
+    start = np.ceil(t1 * fs/H)
+    end = np.floor(t2 * fs/H)
+    hFreq = xhfreq[start:end+1]
+
+    hMag = xhfreq[start:end+1]
     # 3. Compute the mean inharmonicity for the segment
+    # NOTE that inharmonicity does nothing with the magnitude, it just looks at the frequency deviation/error
+    # and HFreq[0] is the fundamental f0
+    R = len(hFreq)
+    print R
+    print np.shape(hFreq)
+    inharmonicity = []
+    for frame in hFreq:
+        #print frame
+        inh =  map(lambda r: abs(frame[r - 1] - (r * frame[0])) / r, np.arange(1, len(frame) + 1))
+        inharmonicity.append(np.sum(inh)/len(frame))
+        print "Frame Inharmonicity = " + str(np.sum(inh)/len(frame))
+    
+    
+    inharmonicity = np.sum(inharmonicity) / (end - start + 1)
+    print "Total Inharmonicity = " + str(inharmonicity)
+    return(inharmonicity)
+
+    
     
 
+##########################
+#You can put the code that calls the above functions down here    
+if __name__ == "__main__":
+    estimateInharmonicity()

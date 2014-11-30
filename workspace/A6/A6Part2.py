@@ -102,23 +102,72 @@ def segmentStableNotesRegions(inputFile = '../../sounds/sax-phrase-short.wav', s
     fs, x = UF.wavread(inputFile)                               #reading inputFile
     w  = get_window(window, M)                                  #obtaining analysis window    
     f0 = HM.f0Detection(x, fs, w, N, H, t, minf0, maxf0, f0et)  #estimating F0
+    # f0Detection splits the signal into "frames" of length H (hop size) and returns an f0 for each of these frames
+    # So the number of frames in the signal is simply the length of f0
 
     ### Your code here
 
     # 1. convert f0 values from Hz to Cents (as described in pdf document)
+    f0 = 1200 * np.log2(f0/55.0)
+    numFrames = len(f0)
     
+    #f0_sd = []
     # 2. create an array containing standard deviation of last winStable samples
+#    for i in np.arange(winStable,numFrames - winStable -1):
+#        print str(winStable) + str(i)
+#        f0_sd[i - winStable] = np.std(f0[i - winStable : i])
+    frameIndex = np.arange(winStable - 1, numFrames) # New index from winStable - 1 to num of frames
+    print frameIndex
+    # It's winStable - 1 because the SD includes current sample also. i.e. for winStable = 3, you need to use indexes 0 - 2 for first sample
+
+    # Find a new array of standard deviations where each sample is the SD with the last winStable frames
+    f0_sd = np.array(map(lambda i: np.std(f0[i - winStable + 1:i+1]),frameIndex))
     
     # 3. apply threshold on standard deviation values to find indices of the stable points in melody
+    # To get the IDs of stable frames, you need to add the 
+    stidx = np.where(f0_sd < stdThsld)[0] + winStable - 1 
     
     # 4. create segments of continuous stable points such that concequtive stable points belong to 
     #    same segment
+    segments = groupConsecutiveRuns(stidx)
 
     # 5. apply segment filtering, i.e. remove segments with are < minNoteDur in length
+    # Now segments is a list of arrays of the form [[startidx_1, endidx_1],[startidx_2, endidx_2]...]
+    # We need to remove all segments that are not long enough
+    minFrames = int(minNoteDur * fs / H)
+    opseg = []
+    for item in segments:
+        if(filterShortSegments(item[0],item[1],minFrames) == True):
+            print "Got segment: " + str(item)
+            opseg.append(item)
     
+    segments = np.array(opseg)
     # plotSpectogramF0Segments(x, fs, w, N, H, f0, segments)
-
+    plotSpectogramF0Segments(x, fs, w, N, H, f0, segments)
+    print str(segments)
     # return segments
+    return segments
+
+def groupConsecutiveRuns(xs):
+    # Array_split splits the array into sub arrays at the given indexes
+    # np.diff(a) - out[n] = a[n+1] - a[n]
+    segments = np.array_split(xs, np.where(np.diff(xs) != 1)[0] + 1)
+    print np.shape(segments)
+    segsmall = []
+    i = 0;
+    # Now just get the start and end values of each segment
+    for item in segments:
+        print item
+        segsmall.append([item[0],item[len(item) - 1]])
+        i = i + 1
+        
+    return segsmall    
+
+def filterShortSegments(i_start, i_end, minFrames):
+    if(minFrames <= (i_end - i_start)):
+        return True
+    else:
+        return False
 
 ## Use this function to plot the f0 contour and the estimated segments on the spectrogram
 def plotSpectogramF0Segments(x, fs, w, N, H, f0, segments):
@@ -155,3 +204,7 @@ def plotSpectogramF0Segments(x, fs, w, N, H, f0, segments):
     plt.autoscale(tight=True) 
     plt.show()
     
+##########################
+#You can put the code that calls the above functions down here    
+if __name__ == "__main__":
+    segmentStableNotesRegions()
