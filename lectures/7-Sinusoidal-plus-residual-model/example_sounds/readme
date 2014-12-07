@@ -1,0 +1,20 @@
+
+An example of a good analysis for a male speech sound can be found here: 
+Input sound: http://freesound.org/people/xserra/sounds/254358/
+Harmonic component: http://freesound.org/people/xserra/sounds/254360/
+Residual component: http://freesound.org/people/xserra/sounds/254372/
+Stochastic component: http://freesound.org/people/xserra/sounds/254359/
+Harmonic+stochastic resynthesis: http://freesound.org/people/xserra/sounds/254361/
+
+
+- window: blackman
+- window size: 1101
+- FFT size: 4096
+- magnitude threshold: -90
+- minimum duration of sinusoidal tracks: 0.02
+- maximum number of harmonics: 100
+- minimum fundamental frequency: 80
+- maximum fundamental frequency: 250
+- maximum error in f0 detection algorithm: 5
+- max frequency deviation in harmonic tracks: 0.02
+- stochastic approximation factor: .2 
